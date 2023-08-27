@@ -11,6 +11,7 @@ app.set('views', 'views');      // telling the express where are all the views f
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
+const mongoConnect = require('./util/database').mongoConnect;
 
 app.use(bodyParser.urlencoded({ extended: false }));      // to parse the data in the incoming request
 app.use(express.static(path.join(__dirname, 'public')));    // make the public folder available statically anywhere in the code, for read-only. Other folders are not accessible
@@ -28,8 +29,13 @@ app.use((req, res, next) => {
     //         next();
     //     })
     //     .catch(err => console.log(err));
+    next();
 })
 app.use('/admin', adminRoutes);     // filtering the admin routes. If a request has /admin in the beginnning, then only it will further go to the admin routes
 app.use(shopRoutes);
 
 app.use(errorController.get404Page);
+
+mongoConnect(() => {
+    app.listen(3000);
+});
