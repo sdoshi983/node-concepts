@@ -26,7 +26,7 @@ app.use((req, res, next) => {
     User.findById("64eb501e817bbe9744caccec")
         .then(user => {
             // we are storing user object in the request object. As, by default req object doesn't have any such key as user. Hence it is like we are creating a new key and assign the user obejct to that key. 
-            req.user = user;
+            req.user = new User(user.name, user.email, user.cart, user._id);
             next();
         })
         .catch(err => console.log(err));
