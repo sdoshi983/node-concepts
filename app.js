@@ -2,6 +2,7 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const app = express();
 
@@ -11,7 +12,6 @@ app.set('views', 'views');      // telling the express where are all the views f
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
-const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
 
 app.use(bodyParser.urlencoded({ extended: false }));      // to parse the data in the incoming request
@@ -36,6 +36,9 @@ app.use(shopRoutes);
 
 app.use(errorController.get404Page);
 
-mongoConnect(() => {
-    app.listen(3000);
-});
+mongoose.connect('mongodb+srv://sd:sdoshi983@cluster0.0nb30.mongodb.net/shop?retryWrites=true&w=majority')
+    .then(result => {
+        console.log('connected');
+        app.listen(3000);
+    })
+    .catch(err => console.log(err))
