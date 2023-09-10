@@ -9,7 +9,13 @@ exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    const product = new Product({ title: title, price: price, description: description, imageUrl: imageUrl });
+    const product = new Product({
+        title: title,
+        price: price,
+        description: description,
+        imageUrl: imageUrl,
+        userId: req.user        // because the type of the userId key is of type ObjectId, mongoose will only take the _id from the req.user
+    });
 
     product.save().then(result => {
         res.redirect('/admin/products');
