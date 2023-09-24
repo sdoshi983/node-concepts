@@ -36,15 +36,18 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    req.user.getCart().then(products => {
-        res.render('shop/cart', {
-            pageTitle: 'Your Cart',
-            path: '/cart',
-            products: products
-        });
-    }).catch(err => {
-        console.log(err);
-    })
+    req.user
+        .populate('cart.items.productId')
+        .then(user => {
+            const products = user.cart.items;
+            res.render('shop/cart', {
+                pageTitle: 'Your Cart',
+                path: '/cart',
+                products: products
+            });
+        }).catch(err => {
+            console.log(err);
+        })
 };
 
 exports.postCart = (req, res, next) => {
