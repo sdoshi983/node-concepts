@@ -4,9 +4,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
+
+const MONGODB_URI = 'mongodb+srv://sd:sdoshi983@cluster0.0nb30.mongodb.net/shop';
 
 const app = express();
-
+const store = new MongoDBStore({
+    uri: MONGODB_URI,
+    collection: 'sessions'
+})
 app.set('view engine', 'ejs');     // telling express which templating engine to use "whenever we try to use it"
 app.set('views', 'views');      // telling the express where are all the views file located. Default value is projectSource/views
 
@@ -22,7 +28,12 @@ app.use(express.static(path.join(__dirname, 'public')));    // make the public f
 __dirname gives the location of the root project folder.
 join method concats the arguments in a single string.
 */
-app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false, }))
+app.use(session({
+    secret: 'my secret',
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+}))
 
 // Below we are registering a middleware for all the incoming request. Note that it is called at the top (before all the middlewares) so we will be having the user data before any incoming requests gets hit/fulfilled
 app.use((req, res, next) => {
@@ -40,7 +51,7 @@ app.use(authRoutes);
 
 app.use(errorController.get404Page);
 
-mongoose.connect('mongodb+srv://sd:sdoshi983@cluster0.0nb30.mongodb.net/shop?retryWrites=true&w=majority')
+mongoose.connect(MONGODB_URI)
     .then(result => {
         console.log('connected');
         User.findOne().then(user => {
