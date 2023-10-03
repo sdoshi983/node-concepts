@@ -3,7 +3,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const session = require('session');
+const session = require('express-session');
 
 const app = express();
 
@@ -22,6 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));    // make the public f
 __dirname gives the location of the root project folder.
 join method concats the arguments in a single string.
 */
+app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false, }))
 
 // Below we are registering a middleware for all the incoming request. Note that it is called at the top (before all the middlewares) so we will be having the user data before any incoming requests gets hit/fulfilled
 app.use((req, res, next) => {
