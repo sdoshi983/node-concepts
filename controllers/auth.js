@@ -1,7 +1,6 @@
 const User = require('../models/user');
 
 exports.getLogin = (req, res, next) => {
-    console.log(req.session.isLoggedIn);
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
@@ -14,7 +13,10 @@ exports.postLogin = (req, res, next) => {
         .then(user => {
             req.session.isLoggedIn = true;
             req.session.user = user;
-            res.redirect('/');
+            req.session.save(err => {       // this method is not compulsorly needed. It is used to make sure session is stored and wrote to the mongodb before any other new requests are fired
+                console.log(err);
+                res.redirect('/');
+            });
         }).catch(err => console.log(err));
 
 };
