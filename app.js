@@ -37,7 +37,10 @@ app.use(session({
 
 // Below we are registering a middleware for all the incoming request. Note that it is called at the top (before all the middlewares) so we will be having the user data before any incoming requests gets hit/fulfilled
 app.use((req, res, next) => {
-    User.findById("64fd6666c6000de5dbed76fb")
+    if (!req.session.user) {
+        return next();
+    }
+    User.findById(req.session.user._id)
         .then(user => {
             // we are storing user object in the request object. As, by default req object doesn't have any such key as user. Hence it is like we are creating a new key and assign the user obejct to that key. 
             req.user = user;
