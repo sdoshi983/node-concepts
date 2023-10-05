@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const MONGODB_URI = 'mongodb+srv://sd:sdoshi983@cluster0.0nb30.mongodb.net/shop';
 
@@ -38,6 +39,7 @@ app.use(session({
     store: store,
 }))
 app.use(csrfProtection);    // this middleware is registered to add csrf token protection against CSRF attack
+app.use(flash());
 
 // Below we are registering a middleware for all the incoming request. Note that it is called at the top (before all the middlewares) so we will be having the user data before any incoming requests gets hit/fulfilled
 app.use((req, res, next) => {
