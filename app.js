@@ -37,7 +37,7 @@ app.use(session({
     saveUninitialized: false,
     store: store,
 }))
-app.use(csrfProtection);
+app.use(csrfProtection);    // this middleware is registered to add csrf token protection against CSRF attack
 
 // Below we are registering a middleware for all the incoming request. Note that it is called at the top (before all the middlewares) so we will be having the user data before any incoming requests gets hit/fulfilled
 app.use((req, res, next) => {
@@ -52,6 +52,13 @@ app.use((req, res, next) => {
         })
         .catch(err => console.log(err));
 })
+
+app.use((req, res, next) => {       // this middleware is registered to set locals, which is passed to all the views that are rendered so we don't have to pass it manually in all the routes
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
+
 app.use('/admin', adminRoutes);     // filtering the admin routes. If a request has /admin in the beginnning, then only it will further go to the admin routes
 app.use(shopRoutes);
 app.use(authRoutes);
