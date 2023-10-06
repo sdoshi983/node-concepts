@@ -85,7 +85,7 @@ exports.postSignup = (req, res, next) => {
             path: '/signup',
             pageTitle: 'Signup',
             isAuthenticated: false,
-            errorMessage: errors.array(),
+            errorMessage: errors.array()[0].msg,
         })
     }
 
