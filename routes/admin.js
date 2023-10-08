@@ -19,7 +19,7 @@ router.post(
     '/add-product',
     [
         body('title')
-            .isAlphanumeric()
+            .isString()
             .isLength({ min: 3 })
             .trim(),
         body('imageUrl').isURL(),
@@ -40,13 +40,13 @@ router.post(
     '/edit-product',
     [
         body('title')
-            .isAlphanumeric()
+            .isString()
             .isLength({ min: 3 })
             .trim(),
         body('imageUrl').isURL(),
         body('price').isFloat(),
         body('description')
-            .isLength({ min: 5, max: 400 })
+            .isLength({ min: 3, max: 400 })
             .trim(),
     ],
     isAuth,
