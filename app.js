@@ -41,6 +41,12 @@ app.use(session({
 app.use(csrfProtection);    // this middleware is registered to add csrf token protection against CSRF attack
 app.use(flash());
 
+app.use((req, res, next) => {       // this middleware is registered to set locals, which is passed to all the views that are rendered so we don't have to pass it manually in all the routes
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
+
 // Below we are registering a middleware for all the incoming request. Note that it is called at the top (before all the middlewares) so we will be having the user data before any incoming requests gets hit/fulfilled
 app.use((req, res, next) => {
     if (!req.session.user) {
@@ -56,15 +62,9 @@ app.use((req, res, next) => {
             next();
         })
         .catch(err => {
-            throw new Error(err);
+            next(new Error(err));
         });
 })
-
-app.use((req, res, next) => {       // this middleware is registered to set locals, which is passed to all the views that are rendered so we don't have to pass it manually in all the routes
-    res.locals.isAuthenticated = req.session.isLoggedIn;
-    res.locals.csrfToken = req.csrfToken();
-    next();
-});
 
 app.use('/admin', adminRoutes);     // filtering the admin routes. If a request has /admin in the beginnning, then only it will further go to the admin routes
 app.use(shopRoutes);
@@ -75,7 +75,11 @@ app.get('/500', errorController.get500Page);
 app.use(errorController.get404Page);
 
 app.use((error, req, res, next) => {        // this middleware is kept in the bottom, but as it is a special middleware (having 4 arguments), express will directly call this middle, skipping all, when we call next(error)
-    res.redirect('/500');
+    res.status(500).render('500', {
+        pageTitle: 'Error!',
+        path: '/500',
+        isAuthenticated: req.session.isLoggedIn,
+    });
 });
 
 mongoose.connect(MONGODB_URI)
