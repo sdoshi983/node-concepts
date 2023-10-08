@@ -70,9 +70,13 @@ app.use('/admin', adminRoutes);     // filtering the admin routes. If a request 
 app.use(shopRoutes);
 app.use(authRoutes);
 
-app.get('/500', errorController.get500Page );
+app.get('/500', errorController.get500Page);
 
 app.use(errorController.get404Page);
+
+app.use((error, req, res, next) => {        // this middleware is kept in the bottom, but as it is a special middleware (having 4 arguments), express will directly call this middle, skipping all, when we call next(error)
+    res.redirect('/500');
+});
 
 mongoose.connect(MONGODB_URI)
     .then(result => {

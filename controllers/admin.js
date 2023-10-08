@@ -54,7 +54,9 @@ exports.postAddProduct = (req, res, next) => {
     product.save().then(result => {
         res.redirect('/admin/products');
     }).catch(err => {
-        res.redirect('/500');
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);     // this will call the error middleware, that we have registered in app.js file
     });
 };
 
