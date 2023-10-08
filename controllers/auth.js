@@ -100,7 +100,12 @@ exports.postLogin = (req, res, next) => {
                     console.log(err);
                     res.redirect('/login');
                 });
-        }).catch(err => console.log(err));
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);     // this will call the error middleware, that we have registered in app.js file
+        });
 
 };
 
@@ -142,7 +147,11 @@ exports.postSignup = (req, res, next) => {
             //     html: '<h1>You successfully signed up!</h1>'
             // });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);     // this will call the error middleware, that we have registered in app.js file
+        });
 
 };
 
@@ -197,7 +206,11 @@ exports.postReset = (req, res, next) => {
                     `
                 });
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                const error = new Error(err);
+                error.httpStatusCode = 500;
+                return next(error);     // this will call the error middleware, that we have registered in app.js file
+            });
     });
 }
 
@@ -220,7 +233,11 @@ exports.getNewPasword = (req, res, next) => {
                 passwordToken: token,
             })
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);     // this will call the error middleware, that we have registered in app.js file
+        });
 
 }
 
@@ -244,5 +261,9 @@ exports.postNewPassword = (req, res, next) => {
         .then(result => {
             res.redirect('/login');
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);     // this will call the error middleware, that we have registered in app.js file
+        });
 }

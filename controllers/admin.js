@@ -43,7 +43,6 @@ exports.postAddProduct = (req, res, next) => {
         });
     }
     const product = new Product({
-        _id: new mongoose.Types.ObjectId('65201c5ee40184ec0dce1a1e'),
         title: title,
         price: price,
         description: description,
@@ -82,7 +81,11 @@ exports.getEditProduct = (req, res, next) => {
                 validationErrors: [],
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);     // this will call the error middleware, that we have registered in app.js file
+        });
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -128,7 +131,9 @@ exports.postEditProduct = (req, res, next) => {
                 });
         })
         .catch(err => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);     // this will call the error middleware, that we have registered in app.js file
         });
 };
 
@@ -143,18 +148,24 @@ exports.getProducts = (req, res, next) => {
                 pageTitle: 'Admin Products',
                 path: '/admin/products',
             })
-        }).catch(err => {
-            console.log(err);
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);     // this will call the error middleware, that we have registered in app.js file
         });
 };
 
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.deleteONe({ _id: prodId, userId: req.user._id })
+    Product.deleteOne({ _id: prodId, userId: req.user._id })
         .then(product => {
             console.log('DELETED PRODUCT!');
             res.redirect('/admin/products');
-        }).catch(err => {
-            console.log(err)
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);     // this will call the error middleware, that we have registered in app.js file
         });
 };
