@@ -15,10 +15,12 @@ router.post(
     [
         body('email')
             .isEmail()
-            .withMessage('Please enter a valid email address.'),
+            .withMessage('Please enter a valid email address.')
+            .normalizeEmail(),
         body('password', 'Password has to be valid.')
             .isLength({ min: 3 })
             .isAlphanumeric()
+            .trim()
     ],
     authController.postLogin,
 );
@@ -34,13 +36,18 @@ router.post(
                             return Promise.reject('E-mail exists already, please pick a different one');
                         }
                     });
-            }),
-        body('password', 'Please enter a pssword with only numbers and text and atleast 3 characters').isLength({ min: 3 }).isAlphanumeric(),
-        body('confirmPassword').custom((value, { req }) => {
-            if (value !== req.body.password) {
-                throw new Error('Passwords have to match')
-            }
-        })
+            })
+            .normalizeEmail(),
+        body('password', 'Please enter a pssword with only numbers and text and atleast 3 characters')
+            .isLength({ min: 3 })
+            .isAlphanumeric(),
+        body('confirmPassword')
+            .custom((value, { req }) => {
+                if (value !== req.body.password) {
+                    throw new Error('Passwords have to match')
+                }
+                return true;
+            })
     ],
     authController.postSignup,
 );
