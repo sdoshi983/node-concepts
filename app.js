@@ -48,11 +48,16 @@ app.use((req, res, next) => {
     }
     User.findById(req.session.user._id)
         .then(user => {
+            if (!user) {
+                return next();
+            }
             // we are storing user object in the request object. As, by default req object doesn't have any such key as user. Hence it is like we are creating a new key and assign the user obejct to that key. 
             req.user = user;
             next();
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            throw new Error(err);
+        });
 })
 
 app.use((req, res, next) => {       // this middleware is registered to set locals, which is passed to all the views that are rendered so we don't have to pass it manually in all the routes
@@ -64,6 +69,8 @@ app.use((req, res, next) => {       // this middleware is registered to set loca
 app.use('/admin', adminRoutes);     // filtering the admin routes. If a request has /admin in the beginnning, then only it will further go to the admin routes
 app.use(shopRoutes);
 app.use(authRoutes);
+
+app.get('/500', errorController.get500Page );
 
 app.use(errorController.get404Page);
 
