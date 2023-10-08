@@ -10,7 +10,18 @@ router.get('/login', authController.getLogin);
 
 router.get('/signup', authController.getSignup);
 
-router.post('/login', authController.postLogin);
+router.post(
+    '/login',
+    [
+        body('email')
+            .isEmail()
+            .withMessage('Please enter a valid email address.'),
+        body('password', 'Password has to be valid.')
+            .isLength({ min: 3 })
+            .isAlphanumeric()
+    ],
+    authController.postLogin,
+);
 
 router.post(
     '/signup',
@@ -24,7 +35,7 @@ router.post(
                         }
                     });
             }),
-        body('password', 'Please enter a pssword with only numbers and text and atleast 5 characters').isLength({ min: 5 }).isAlphanumeric(),
+        body('password', 'Please enter a pssword with only numbers and text and atleast 3 characters').isLength({ min: 3 }).isAlphanumeric(),
         body('confirmPassword').custom((value, { req }) => {
             if (value !== req.body.password) {
                 throw new Error('Passwords have to match')
