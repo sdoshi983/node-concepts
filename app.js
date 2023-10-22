@@ -7,6 +7,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const multer = require('multer');
 
 const MONGODB_URI = 'mongodb+srv://sd:sdoshi983@cluster0.0nb30.mongodb.net/shop';
 
@@ -27,6 +28,7 @@ const errorController = require('./controllers/error');
 const User = require('./models/user');
 
 app.use(bodyParser.urlencoded({ extended: false }));      // to parse the data in the incoming request
+app.use(multer({dest: 'images'}).single('image'));       // this package is used to handle multipart request, for file upload
 app.use(express.static(path.join(__dirname, 'public')));    // make the public folder available statically anywhere in the code, for read-only. Other folders are not accessible
 /*
 __dirname gives the location of the root project folder.
