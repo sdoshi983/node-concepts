@@ -17,6 +17,14 @@ const store = new MongoDBStore({
     collection: 'sessions'
 })
 const csrfProtection = csrf();
+const fileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'images');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.filename + '-' + file.originalname);
+    }
+})
 
 app.set('view engine', 'ejs');     // telling express which templating engine to use "whenever we try to use it"
 app.set('views', 'views');      // telling the express where are all the views file located. Default value is projectSource/views
@@ -28,7 +36,7 @@ const errorController = require('./controllers/error');
 const User = require('./models/user');
 
 app.use(bodyParser.urlencoded({ extended: false }));      // to parse the data in the incoming request
-app.use(multer({dest: 'images'}).single('image'));       // this package is used to handle multipart request, for file upload
+app.use(multer({storage: fileStorage}).single('image'));       // this package is used to handle multipart request, for file upload
 app.use(express.static(path.join(__dirname, 'public')));    // make the public folder available statically anywhere in the code, for read-only. Other folders are not accessible
 /*
 __dirname gives the location of the root project folder.
